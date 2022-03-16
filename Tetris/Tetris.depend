@@ -1,0 +1,16 @@
+# depslib dependency file v1.0
+1647442110 source:d:\quang\dai hoc cong nghe\lap trinh nang cao\bai-tap-tu-luyen\ltnc-btl\tetris\main.cpp
+	<iostream>
+	<SDL.h>
+	"SDL_init.h"
+	<ctime>
+	<cstdlib>
+
+1647428818 source:d:\quang\dai hoc cong nghe\lap trinh nang cao\bai-tap-tu-luyen\ltnc-btl\tetris\sdl_init.cpp
+	<SDL.h>
+	"SDL_init.h"
+
+1647423879 d:\quang\dai hoc cong nghe\lap trinh nang cao\bai-tap-tu-luyen\ltnc-btl\tetris\sdl_init.h
+	<iostream>
+	<SDL.h>
+
