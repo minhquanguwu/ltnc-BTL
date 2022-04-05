@@ -1,17 +1,18 @@
 #include <iostream>
 #include <SDL.h>
+#include <SDL_image.h>
 #include "SDL_init.h"
-#include <ctime>
+#include <time.h>
 #include <cstdlib>
 
 using namespace std;
 
-const int SCREEN_WIDTH = 800;
+const int SCREEN_WIDTH = 300;
 const int SCREEN_HEIGHT = 600;
 const string WINDOW_TITLE = "minhwanguwu";
 const int M = 20;
 const int N = 10;
-const int STEP = 50;
+const int STEP = 30;
 struct point{
   int x, y;
   int status = 0;
@@ -26,9 +27,22 @@ int piece[7][4] =
     3,5,4,7, // T
     2,3,5,7, // L
     3,5,7,6, // J
-    2,3,4,5, // d
+    2,3,4,5, // O
 };
-
+void DrawMap(SDL_Renderer* renderer)
+{
+    for(int i = 0; i <= 300; i+=30)
+    {
+        SDL_SetRenderDrawColor(renderer,255,255,255,0);
+        SDL_RenderDrawLine(renderer,i,0,i,STEP*(M+1));
+    }
+    for(int i = 0; i <=630; i+=30)
+    {
+        SDL_SetRenderDrawColor(renderer,255,255,255,0);
+        SDL_RenderDrawLine(renderer,0,i,STEP*N,i);
+    }
+    SDL_RenderPresent(renderer);
+}
 void moved(SDL_Renderer* renderer, point a[])
 {
     SDL_Event e;
@@ -165,8 +179,9 @@ void moved(SDL_Renderer* renderer, point a[])
                 case SDLK_ESCAPE:
                 return;
             }
-            SDL_SetRenderDrawColor(renderer,255,255,255,0);
+            SDL_SetRenderDrawColor(renderer,0,0,0,0);
             SDL_RenderClear(renderer);
+            DrawMap(renderer);
             for(int i = 0; i < 4; i++){
                 draw(renderer,a[i].x,a[i].y);
             }
@@ -174,6 +189,13 @@ void moved(SDL_Renderer* renderer, point a[])
     }
 }
 
+bool GameOver()
+{
+    for(int i=0; i<4; i++){
+        if(a[i].y >630) return true;
+    }
+    return false;
+}
 int main(int argc, char* argv[])
 {
     SDL_Window* window;
@@ -181,7 +203,6 @@ int main(int argc, char* argv[])
     initSDL(window, renderer, SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_TITLE);
     SDL_SetRenderDrawColor(renderer,255,255,255,0);
     SDL_RenderClear(renderer);
-
     srand(time(0));
     int n = rand() % 7;
     for(int i = 0; i < 4; i++){
@@ -193,7 +214,12 @@ int main(int argc, char* argv[])
         cout << a[i].x << " " << a[i].y << endl;
         draw(renderer,a[i].x,a[i].y);
     }
-    moved(renderer,a);
+    while(!GameOver())
+    {
+        moved(renderer,a);
+        //SDL_Delay(1000);
+    }
+    //moved(renderer,a);
     quitSDL(window, renderer);
     return 0;
 }

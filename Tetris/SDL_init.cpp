@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include "SDL_init.h"
 
-const int SCREEN_WIDTH = 800;
+const int SCREEN_WIDTH = 300;
 const int SCREEN_HEIGHT = 600;
 const string WINDOW_TITLE = "minhwanguwu";
 
@@ -39,14 +39,14 @@ void quitSDL(SDL_Window* window, SDL_Renderer* renderer)
 }
 void draw(SDL_Renderer* renderer, int x, int y)
 {
-    const int RECT_SIZE = 50;
+    const int RECT_SIZE = 30;
     SDL_Rect rect;
     rect.x = x;
     rect.y = y;
     rect.w = RECT_SIZE;
     rect.h = RECT_SIZE;
 
-    SDL_SetRenderDrawColor(renderer,255,255,255,0);
+    SDL_SetRenderDrawColor(renderer,128,128,128,0);
     SDL_SetRenderDrawColor(renderer,0,0,255,0);
     SDL_RenderFillRect(renderer,&rect);
     SDL_RenderPresent(renderer);
