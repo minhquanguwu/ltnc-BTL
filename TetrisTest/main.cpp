@@ -9,18 +9,26 @@ int main(int argc, char* argv[])
     Tetris* tetris = new Tetris();
     const char* title = "Minhwang";
     srand(time(0));
-    if(tetris->init(title))
+    while(tetris->restart())
     {
-        while(tetris->isrunning())
+        if(tetris->init(title))
         {
-            tetris->setcurrentTime(SDL_GetTicks());
-            tetris->check();
-            tetris->handleEvent();
-            tetris->gameplay();
-            tetris->updateRender();
+            tetris->gameStart();
+            while(tetris->isrunning())
+            {
+                tetris->setcurrentTime(SDL_GetTicks());
+                tetris->check();
+                tetris->handleEvent();
+                tetris->gameplay();
+                tetris->updateRender();
+            }
+            tetris->gameOver();
         }
+        else cout << "Error";
+        tetris->clean();
     }
-    else cout << "Error";
-    tetris->clean();
+    IMG_Quit();
+    Mix_Quit();
+    SDL_Quit();
     return 0;
 }
