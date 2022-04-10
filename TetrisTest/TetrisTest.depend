@@ -18,22 +18,24 @@
 	<ctime>
 	<iostream>
 
-1649405666 source:d:\quang\dai hoc cong nghe\lap trinh nang cao\bai-tap-tu-luyen\ltnc-btl\tetristest\main.cpp
+1649579646 source:d:\quang\dai hoc cong nghe\lap trinh nang cao\bai-tap-tu-luyen\ltnc-btl\tetristest\main.cpp
 	<iostream>
 	<ctime>
 	<cstdlib>
 	"Tetris.h"
 
-1649400569 d:\quang\dai hoc cong nghe\lap trinh nang cao\bai-tap-tu-luyen\ltnc-btl\tetristest\tetris.h
+1649597403 d:\quang\dai hoc cong nghe\lap trinh nang cao\bai-tap-tu-luyen\ltnc-btl\tetristest\tetris.h
 	<iostream>
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_mixer.h>
+	<SDL_ttf.h>
 	<string>
 
-1649406943 source:d:\quang\dai hoc cong nghe\lap trinh nang cao\bai-tap-tu-luyen\ltnc-btl\tetristest\tetris.cpp
+1649599930 source:d:\quang\dai hoc cong nghe\lap trinh nang cao\bai-tap-tu-luyen\ltnc-btl\tetristest\tetris.cpp
 	"Tetris.h"
 	<cstdlib>
 	<ctime>
 	<iostream>
+	<string>
 

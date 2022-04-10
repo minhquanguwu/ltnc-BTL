@@ -6,6 +6,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
+#include <SDL_ttf.h>
 #include <string>
 
 class Tetris
@@ -37,6 +38,7 @@ public:
     void firstInit();
     void gameStart();
     void gameOver();
+    void loadFont(std::string text, SDL_Rect source, SDL_Rect destination);
     void clean();
 
 private:
@@ -48,6 +50,7 @@ private:
     SDL_Texture* background = NULL, *block = NULL, *bggameOver = NULL, *bggameStart = NULL;
     Mix_Music *Music = NULL;
     Mix_Chunk *Scratch = NULL;
+    TTF_Font *Font = NULL;
     SDL_Rect src_rec = {0,0,BlockW,BlockH}, dst_rec = {0,0,BlockW,BlockH};
 
     bool running = false;

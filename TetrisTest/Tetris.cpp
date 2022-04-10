@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <string>
 using namespace std;
 /*
     0 1 2 3
@@ -29,6 +30,7 @@ bool Tetris::init(const char* title)
             if(renderer != NULL)
             {
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                // Initialize PNG loading
                 int imgFlags = IMG_INIT_PNG;
                 int initted = IMG_Init(imgFlags);
                 if((initted & imgFlags) != imgFlags)
@@ -67,6 +69,13 @@ bool Tetris::init(const char* title)
         printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
         return false;
     }
+    //Initialize SDL_ttf
+    if (TTF_Init() < 0)
+    {
+        SDL_Log("%s", TTF_GetError());
+        return -1;
+    }
+    Font = TTF_OpenFont("Font2.ttf",35);
     running = true;
     score = 0;
     return true;
@@ -272,6 +281,11 @@ void Tetris::updateRender()
         moveRectPos(dst_rec,445,250);
         SDL_RenderCopy(renderer,block,&src_rec,&dst_rec);
     }
+    // render current Score
+    setRectPos(src_rec,0,0);
+    setRectPos(dst_rec,500,700);
+    loadFont(to_string(score), src_rec, dst_rec);
+
     SDL_RenderPresent(renderer);
 }
 void Tetris::firstInit()
@@ -290,6 +304,11 @@ void Tetris::gameStart()
 {
     SDL_Event e;
     SDL_RenderCopy(renderer,bggameStart,NULL,NULL);
+    setRectPos(src_rec,0,0);
+    setRectPos(dst_rec,150,50);
+    loadFont("START THE GAME <3 ", src_rec, dst_rec);
+    setRectPos(dst_rec,130,150);
+    loadFont("Press SPACE to continue ", src_rec, dst_rec);
     SDL_RenderPresent(renderer);
     while(true)
     {
@@ -312,7 +331,14 @@ void Tetris::gameStart()
 void Tetris::gameOver()
 {
     SDL_RenderCopy(renderer,bggameOver,NULL,NULL);
-    cout << score;
+    setRectPos(src_rec,0,0);
+    setRectPos(dst_rec,150,50);
+    loadFont("WANNA PLAY AGAIN ?", src_rec, dst_rec);
+    setRectPos(dst_rec,150,100);
+    loadFont("YES(1)       NO(2)", src_rec, dst_rec);
+    setRectPos(dst_rec,200,850);
+    string Res = "YOUR SCORE: " + to_string(score);
+    loadFont(Res, src_rec, dst_rec);
     SDL_RenderPresent(renderer);
     SDL_Event e;
     while(true)
@@ -339,6 +365,21 @@ void Tetris::gameOver()
         }
     }
 }
+void Tetris::loadFont(string text, SDL_Rect source, SDL_Rect destination)
+{
+	SDL_Color fg = { 0, 191, 255 };
+
+	SDL_Surface *surface = TTF_RenderText_Blended(Font, text.c_str(), fg);
+	SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+	SDL_FreeSurface(surface);
+
+	TTF_SizeText(Font, text.c_str(), &source.w, &destination.h);
+
+	destination.w = source.w;
+	destination.h = source.h;
+	SDL_RenderCopy(renderer, texture, &source, &destination);
+
+}
 bool Tetris::restart()
 {
     return play;
@@ -350,6 +391,7 @@ void Tetris::clean()
     SDL_DestroyTexture(bggameStart);
     SDL_DestroyTexture(bggameOver);
     SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
     Mix_FreeMusic(Music);
     Mix_FreeChunk(Scratch);
 }
