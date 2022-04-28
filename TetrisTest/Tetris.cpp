@@ -35,7 +35,7 @@ bool Tetris::init(const char* title)
                 int initted = IMG_Init(imgFlags);
                 if((initted & imgFlags) != imgFlags)
                     std::cout << "Error" << IMG_GetError() << '\n';
-                SDL_Surface* loadSurf = IMG_Load("background.png");
+                SDL_Surface* loadSurf = IMG_Load("test8.png");
                 background = SDL_CreateTextureFromSurface(renderer,loadSurf);
                 SDL_FreeSurface(loadSurf);
                 loadSurf = IMG_Load("blocks.png");
@@ -46,6 +46,15 @@ bool Tetris::init(const char* title)
                 SDL_FreeSurface(loadSurf);
                 loadSurf = IMG_Load("gameOver.png");
                 bggameOver = SDL_CreateTextureFromSurface(renderer,loadSurf);
+                SDL_FreeSurface(loadSurf);
+                loadSurf = IMG_Load("doublekill.png");
+                bgdouble = SDL_CreateTextureFromSurface(renderer,loadSurf);
+                SDL_FreeSurface(loadSurf);
+                loadSurf = IMG_Load("triplekill.png");
+                bgtriple = SDL_CreateTextureFromSurface(renderer,loadSurf);
+                SDL_FreeSurface(loadSurf);
+                loadSurf = IMG_Load("monsterkill.png");
+                bgmonster = SDL_CreateTextureFromSurface(renderer,loadSurf);
                 SDL_FreeSurface(loadSurf);
                 firstInit();
                 nextTetrimino();
@@ -58,12 +67,16 @@ bool Tetris::init(const char* title)
     }
     else
         return false;
+    //Init Audio
     if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) == -1 )
     {
         printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
     }
     Music = Mix_LoadMUS("Tocca.wav");
     Scratch = Mix_LoadWAV("scratch.wav");
+    Double = Mix_LoadWAV("doublekill.wav");
+    Triple = Mix_LoadWAV("triplekill.wav");
+    Monster = Mix_LoadWAV("monsterkill.wav");
     if( Music == NULL )
     {
         printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
@@ -118,6 +131,9 @@ void Tetris::handleEvent()
                 break;
             case SDLK_ESCAPE:
                 running = false;
+                break;
+            case SDLK_x:
+                buff = true;
                 break;
             case SDLK_9:
                 //If there is no music playing
@@ -239,19 +255,46 @@ void Tetris::gameplay()
         }
         if(cnt == Column)
         {
-            done = 1;
+            done++;
             score++;
         }
         if(cnt < Column) k--;
     }
-    if(done == 1) Mix_PlayChannel(-1,Scratch,0);
+    if(buff == true)
+    {
+        score++;
+        done = 1;
+        for(int i = Line-1; i >=1; i--)
+        for(int j = 0; j < Column; j++)
+            field[i][j] = field[i-1][j];
+    }
+    if(done == 2) {
+            Mix_PlayChannel(-1,Double,0);
+            lastTime1 = currentTime;
+            doublekill = true;
+    }
+    else if(done == 3) {
+            Mix_PlayChannel(-1,Triple,0);
+            lastTime1 = currentTime;
+            triplekill = true;
+    }
+    else if(done == 4) {
+            Mix_PlayChannel(-1,Monster,0);
+            lastTime1 = currentTime;
+            monsterkill = true;
+    }
+    else if(done > 0) Mix_PlayChannel(-1,Scratch,0);
+
+    //gameOver
     for(int i = 0; i < Column; i++)
     {
         if(field[0][i] != 0)
             running = false;
     }
+
     dx = 0;
     rot = false;
+    buff = false;
     delay = 500;
     done = 0;
 }
@@ -265,7 +308,9 @@ void Tetris::updateRender()
         {
             setRectPos(src_rec,field[i][j]*BlockH);
             setRectPos(dst_rec,j*BlockH,i*BlockW);
-            moveRectPos(dst_rec,36,204);
+            //moveRectPos(dst_rec,36,204);
+            moveRectPos(dst_rec,36,206);
+
             SDL_RenderCopy(renderer,block,&src_rec,&dst_rec);
         }
     }
@@ -274,17 +319,49 @@ void Tetris::updateRender()
         setRectPos(src_rec,color*BlockH);
         // render current Tetrimino
         setRectPos(dst_rec,a[i].x*BlockW,a[i].y*BlockH);
-        moveRectPos(dst_rec,36,204);
+        //moveRectPos(dst_rec,36,204);
+        moveRectPos(dst_rec,36,206);
         SDL_RenderCopy(renderer,block,&src_rec,&dst_rec);
         // render next Tetrimino
         setRectPos(dst_rec,c[i].x*BlockW,c[i].y*BlockH);
-        moveRectPos(dst_rec,445,250);
+        moveRectPos(dst_rec,445,800);
         SDL_RenderCopy(renderer,block,&src_rec,&dst_rec);
+    }
+    //render double kill
+    if(doublekill == true)
+    {
+        setRectPos(dst_rec,250,50,300,300);
+        SDL_RenderCopy(renderer,bgdouble,NULL,&dst_rec);
+        if(currentTime - lastTime1 > 1000)
+        {
+            doublekill = false;
+        }
+    }
+    //render triple kill
+    if(triplekill == true)
+    {
+        setRectPos(dst_rec,250,50,300,300);
+        SDL_RenderCopy(renderer,bgtriple,NULL,&dst_rec);
+        if(currentTime - lastTime1 > 1000)
+        {
+            triplekill = false;
+        }
+    }
+    //render monsterkill
+    if(monsterkill == true)
+    {
+        setRectPos(dst_rec,250,50,300,300);
+        SDL_RenderCopy(renderer,bgmonster,NULL,&dst_rec);
+        if(currentTime - lastTime1 > 1000)
+        {
+            monsterkill = false;
+        }
     }
     // render current Score
     setRectPos(src_rec,0,0);
-    setRectPos(dst_rec,500,700);
-    loadFont(to_string(score), src_rec, dst_rec);
+    setRectPos(dst_rec,500,295);
+    string Res = to_string(score);
+    loadFont(Res, src_rec, dst_rec);
 
     SDL_RenderPresent(renderer);
 }
@@ -334,7 +411,7 @@ void Tetris::gameOver()
     setRectPos(src_rec,0,0);
     setRectPos(dst_rec,150,50);
     loadFont("WANNA PLAY AGAIN ?", src_rec, dst_rec);
-    setRectPos(dst_rec,150,100);
+    setRectPos(dst_rec,175,100);
     loadFont("YES(1)       NO(2)", src_rec, dst_rec);
     setRectPos(dst_rec,200,850);
     string Res = "YOUR SCORE: " + to_string(score);
@@ -390,8 +467,13 @@ void Tetris::clean()
     SDL_DestroyTexture(background);
     SDL_DestroyTexture(bggameStart);
     SDL_DestroyTexture(bggameOver);
+    SDL_DestroyTexture(bgdouble);
+    SDL_DestroyTexture(bgtriple);
+    SDL_DestroyTexture(bgmonster);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     Mix_FreeMusic(Music);
     Mix_FreeChunk(Scratch);
+    Mix_FreeChunk(Triple);
+    Mix_FreeChunk(Monster);
 }

@@ -47,9 +47,12 @@ private:
     enum {Line = 20, Column = 10};
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
-    SDL_Texture* background = NULL, *block = NULL, *bggameOver = NULL, *bggameStart = NULL;
+    SDL_Texture* background = NULL, *block = NULL, *bggameOver = NULL, *bggameStart = NULL, *bgdouble = NULL, *bgtriple = NULL, *bgmonster = NULL;
     Mix_Music *Music = NULL;
     Mix_Chunk *Scratch = NULL;
+    Mix_Chunk *Double = NULL;
+    Mix_Chunk *Triple = NULL;
+    Mix_Chunk *Monster = NULL;
     TTF_Font *Font = NULL;
     SDL_Rect src_rec = {0,0,BlockW,BlockH}, dst_rec = {0,0,BlockW,BlockH};
 
@@ -65,9 +68,11 @@ private:
     int score = 0;
     int dx = 0;
     bool rot = false;
+    bool buff = false;
+    bool doublekill = false, triplekill = false, monsterkill = false;
     bool play = true;
     unsigned int delay = 300;
-    Uint32 lastTime = 0, currentTime = 0;
+    Uint32 lastTime = 0, currentTime = 0, lastTime1 = 0;
 };
 
 #endif // TETRIS_H_H

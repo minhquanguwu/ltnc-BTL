@@ -24,7 +24,7 @@
 	<cstdlib>
 	"Tetris.h"
 
-1649597403 d:\quang\dai hoc cong nghe\lap trinh nang cao\bai-tap-tu-luyen\ltnc-btl\tetristest\tetris.h
+1651131765 d:\quang\dai hoc cong nghe\lap trinh nang cao\bai-tap-tu-luyen\ltnc-btl\tetristest\tetris.h
 	<iostream>
 	<SDL.h>
 	<SDL_image.h>
@@ -32,7 +32,7 @@
 	<SDL_ttf.h>
 	<string>
 
-1649599930 source:d:\quang\dai hoc cong nghe\lap trinh nang cao\bai-tap-tu-luyen\ltnc-btl\tetristest\tetris.cpp
+1651134235 source:d:\quang\dai hoc cong nghe\lap trinh nang cao\bai-tap-tu-luyen\ltnc-btl\tetristest\tetris.cpp
 	"Tetris.h"
 	<cstdlib>
 	<ctime>
