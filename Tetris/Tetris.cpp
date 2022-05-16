@@ -35,7 +35,7 @@ bool Tetris::init(const char* title)
                 int initted = IMG_Init(imgFlags);
                 if((initted & imgFlags) != imgFlags)
                     std::cout << "Error" << IMG_GetError() << '\n';
-                SDL_Surface* loadSurf = IMG_Load("test8.png");
+                SDL_Surface* loadSurf = IMG_Load("test10.png");
                 background = SDL_CreateTextureFromSurface(renderer,loadSurf);
                 SDL_FreeSurface(loadSurf);
                 loadSurf = IMG_Load("blocks.png");
@@ -131,6 +131,9 @@ void Tetris::handleEvent()
                 break;
             case SDLK_ESCAPE:
                 running = false;
+                break;
+            case SDLK_p:
+                pause = true;
                 break;
             case SDLK_x:
                 buff = true;
@@ -260,10 +263,12 @@ void Tetris::gameplay()
         }
         if(cnt < Column) k--;
     }
-    if(buff == true)
+    if(done >= 2) cntbuff++;
+    if(buff == true && cntbuff > 0)
     {
         score++;
         done = 1;
+        cntbuff--;
         for(int i = Line-1; i >=1; i--)
         for(int j = 0; j < Column; j++)
             field[i][j] = field[i-1][j];
@@ -284,18 +289,31 @@ void Tetris::gameplay()
             monsterkill = true;
     }
     else if(done > 0) Mix_PlayChannel(-1,Scratch,0);
-
+    //pause game
+    while(pause == true)
+    {
+        SDL_Event e;
+        if(SDL_PollEvent(&e) == 0) SDL_Delay(100);
+        else if(e.type == SDL_QUIT) {pause = false; break;}
+        else if(e.type == SDL_KEYDOWN)
+        {
+            switch(e.key.keysym.sym)
+            {
+                case SDLK_p: pause = false; break;
+            }
+        }
+    }
     //gameOver
     for(int i = 0; i < Column; i++)
     {
         if(field[0][i] != 0)
             running = false;
     }
-
+    level = (score/20) + 1;
     dx = 0;
     rot = false;
     buff = false;
-    delay = 500;
+    if(500 - (level-1)*40 >= 200) delay = 500 - (level-1)*40;
     done = 0;
 }
 void Tetris::updateRender()
@@ -324,7 +342,7 @@ void Tetris::updateRender()
         SDL_RenderCopy(renderer,block,&src_rec,&dst_rec);
         // render next Tetrimino
         setRectPos(dst_rec,c[i].x*BlockW,c[i].y*BlockH);
-        moveRectPos(dst_rec,445,800);
+        moveRectPos(dst_rec,437,800);
         SDL_RenderCopy(renderer,block,&src_rec,&dst_rec);
     }
     //render double kill
@@ -357,12 +375,26 @@ void Tetris::updateRender()
             monsterkill = false;
         }
     }
+    // render buff
+    setRectPos(src_rec,0,0);
+    setRectPos(dst_rec,510,615);
+    string Res = to_string(cntbuff);
+    loadFont1(Res, src_rec, dst_rec);
     // render current Score
     setRectPos(src_rec,0,0);
     setRectPos(dst_rec,500,295);
-    string Res = to_string(score);
-    loadFont(Res, src_rec, dst_rec);
-
+    Res = to_string(score);
+    loadFont1(Res, src_rec, dst_rec);
+    // render current Level
+    setRectPos(src_rec,0,0);
+    setRectPos(dst_rec,500,400);
+    Res = to_string(level);
+    loadFont1(Res, src_rec, dst_rec);
+    // render current Line
+    setRectPos(src_rec,0,0);
+    setRectPos(dst_rec,500,520);
+    Res = to_string(score);
+    loadFont1(Res, src_rec, dst_rec);
     SDL_RenderPresent(renderer);
 }
 void Tetris::firstInit()
@@ -445,6 +477,21 @@ void Tetris::gameOver()
 void Tetris::loadFont(string text, SDL_Rect source, SDL_Rect destination)
 {
 	SDL_Color fg = { 0, 191, 255 };
+
+	SDL_Surface *surface = TTF_RenderText_Blended(Font, text.c_str(), fg);
+	SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+	SDL_FreeSurface(surface);
+
+	TTF_SizeText(Font, text.c_str(), &source.w, &destination.h);
+
+	destination.w = source.w;
+	destination.h = source.h;
+	SDL_RenderCopy(renderer, texture, &source, &destination);
+
+}
+void Tetris::loadFont1(string text, SDL_Rect source, SDL_Rect destination)
+{
+	SDL_Color fg = { 255, 0, 0 };
 
 	SDL_Surface *surface = TTF_RenderText_Blended(Font, text.c_str(), fg);
 	SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
